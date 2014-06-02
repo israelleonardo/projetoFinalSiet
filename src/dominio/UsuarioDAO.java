@@ -12,9 +12,10 @@ import org.eclipse.jdt.internal.compiler.batch.Main;
 public class UsuarioDAO {
 	
 	private  Connection con;
+	private PreparedStatement stmt;
 	
 	public UsuarioDAO(){
-		con = Conexao.conecta();
+		
 	}
 	
 //	public static void main(String[] args) {
@@ -27,23 +28,16 @@ public class UsuarioDAO {
 	
 	public void inserir(Usuario usuario){
 		String sql = "insert into tb_usuario (nome, login, senha)" + "values(?,?,?)";
-			
-		
 		try{
-			
-		PreparedStatement stmt = con.prepareStatement(sql);
-		
+		open();
+		stmt = con.prepareStatement(sql);
 		stmt.setString(1,usuario.getNome());
 		stmt.setString(2,usuario.getLogin());
 		stmt.setString(3,usuario.getSenha());
 		
 		stmt.execute();
+		close();
 		System.out.println("Usuario inserido com sucesso!");
-		
-		
-			stmt.close();
-		con.close();
-		
 				
 	} catch (SQLException ex) {
 		System.err.println("Falha ao inserir usuario!");
@@ -56,8 +50,8 @@ public class UsuarioDAO {
 	public List<Usuario> select(){
 		List<Usuario> usuarios = new ArrayList<Usuario>();
 		String sql = "SELECT * FROM tb_usuario";
-		PreparedStatement stmt;
 		try {
+			open();
 			stmt = con.prepareStatement(sql);
 			ResultSet res = stmt.executeQuery();
 			while (res.next()){
@@ -69,10 +63,7 @@ public class UsuarioDAO {
 				
 				usuarios.add(usuario);
 			}
-			
-			stmt.close();
-			con.close();
-			
+			close();
 			return usuarios;
 			
 		} catch (SQLException ex) {
@@ -86,23 +77,17 @@ public class UsuarioDAO {
 	public void update(Usuario usuario){
 		String sql = "UPDATE usuario set nome=?, login=?, senha=? where login=?";
 		try {
-		
-			PreparedStatement stmt = con.prepareCall(sql);
+			open();
+			stmt = con.prepareCall(sql);
 			stmt.setString(1, usuario.getNome());
 			stmt.setString(2, usuario.getLogin());
 			stmt.setString(3, usuario.getSenha());
 			
 			stmt.execute();
-			stmt.close();
-			con.close();
-			
+			close();
 		} catch (SQLException ex) {
 			throw new RuntimeException(ex);
 		}
-		
-		
-		 
-		
 	}
 	
 	
@@ -110,18 +95,26 @@ public class UsuarioDAO {
 		String sql = "DELETE from tb_usuario where login=?";
 		
 		try {
-			PreparedStatement stmt = con.prepareCall(sql);
+			open();
+			stmt = con.prepareCall(sql);
 			stmt.setString(1, usuario.getLogin());
-			
 			stmt.execute();
 			System.out.println("Usuario excluido com sucesso!");
-			stmt.close();
-			con.close();
-			
+			close();
 		} catch (SQLException ex) {
 			throw new RuntimeException(ex);
 		}
 	}
 	
+	private void close() throws SQLException{
+		if(stmt != null)
+			stmt.close();
+		if(con != null)
+			con.close();
+	}
+
+	private void open(){
+		con = Conexao.conecta();
+	}
 	
 }

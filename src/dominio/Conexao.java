@@ -9,23 +9,23 @@ public class Conexao {
 		Conexao.conecta();
 	}
 
-	public static Connection conecta(){
-		
+	
+	
+	
+
+	public static Connection conecta() {
 		Connection conectaB = null;
-		
 		try {
-			
-			String url = "jdbc:mysql://localhost:3306/projeto_final";
+			String url = "jdbc:mysql://localhost:3306/siet";
 			String usuario = "root";
-			String senha = "120108";
-			
-			conectaB = DriverManager.getConnection(url,usuario,senha);
+			String senha = "123456";
+			Class.forName("com.mysql.jdbc.Driver");
+			conectaB = DriverManager.getConnection(url, usuario, senha);
 			System.out.println("Banco acessado!");
-			
 		} catch (Exception ex) {
-			System.out.println("Falha na conexão  " + ex.getMessage());
+			System.out.println("Falha na conexï¿½o  " + ex.getMessage());
 		}
 		return conectaB;
-		
+
 	}
 }
